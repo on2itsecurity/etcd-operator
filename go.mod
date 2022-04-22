@@ -21,7 +21,7 @@ require (
 	google.golang.org/api v0.75.0
 	k8s.io/api v0.24.0-rc.0
 	k8s.io/apiextensions-apiserver v0.24.0-rc.0
-	k8s.io/apimachinery v0.24.0-rc.0
+	k8s.io/apimachinery v0.25.0-alpha.0
 	k8s.io/client-go v0.24.0-rc.0
 )
 
