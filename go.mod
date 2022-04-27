@@ -18,7 +18,7 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.3
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	golang.org/x/time v0.0.0-20220411224347-583f2d630306
-	google.golang.org/api v0.75.0
+	google.golang.org/api v0.76.0
 	k8s.io/api v0.24.0-rc.0
 	k8s.io/apiextensions-apiserver v0.24.0-rc.0
 	k8s.io/apimachinery v0.24.0-rc.0
