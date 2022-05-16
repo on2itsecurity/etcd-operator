@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.22.0
 	github.com/Azure/azure-sdk-for-go v64.0.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.27
-	github.com/aliyun/aliyun-oss-go-sdk v2.2.2+incompatible
+	github.com/aliyun/aliyun-oss-go-sdk v2.2.3+incompatible
 	github.com/aws/aws-sdk-go v1.44.4
 	github.com/emadolsky/automaxprocs v1.4.1-0.20220328130039-804bb317418d
 	github.com/pborman/uuid v1.2.1
