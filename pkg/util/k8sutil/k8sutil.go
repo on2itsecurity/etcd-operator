@@ -314,6 +314,9 @@ func addOwnerRefToObject(o metav1.Object, r metav1.OwnerReference) {
 func NewSeedMemberPod(ctx context.Context, kubecli kubernetes.Interface, clusterName, clusterNamespace string, ms etcdutil.MemberSet, m *etcdutil.Member, cs api.ClusterSpec, owner metav1.OwnerReference, backupURL *url.URL) (*v1.Pod, error) {
 	token := uuid.New()
 	pod, err := newEtcdPod(ctx, kubecli, m, ms.PeerURLPairs(), clusterName, clusterNamespace, "new", token, cs)
+	if err != nil {
+		return pod, err
+	}
 	// TODO: PVC datadir support for restore process
 	AddEtcdVolumeToPod(pod, nil, cs.Pod.Tmpfs)
 	if backupURL != nil {
