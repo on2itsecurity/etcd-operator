@@ -315,10 +315,22 @@ func NewSeedMemberPod(ctx context.Context, kubecli kubernetes.Interface, cluster
 	token := uuid.New()
 	pod, err := newEtcdPod(ctx, kubecli, m, ms.PeerURLPairs(), clusterName, clusterNamespace, "new", token, cs)
 	if err != nil {
-		return pod, err
+		return nil, err
 	}
-	// TODO: PVC datadir support for restore process
-	AddEtcdVolumeToPod(pod, nil, cs.Pod.Tmpfs)
+	if cs.Pod != nil && cs.Pod.PersistentVolumeClaimSpec != nil {
+		pvc := NewEtcdPodPVC(m, *cs.Pod.PersistentVolumeClaimSpec, clusterName, clusterNamespace, owner)
+		_, err = kubecli.CoreV1().PersistentVolumeClaims(clusterNamespace).Create(ctx, pvc, metav1.CreateOptions{})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create PVC for member (%s): %v", m.Name, err)
+		}
+		AddEtcdVolumeToPod(pod, pvc, false)
+	} else {
+		if cs.Pod != nil {
+			AddEtcdVolumeToPod(pod, nil, cs.Pod.Tmpfs)
+		} else {
+			AddEtcdVolumeToPod(pod, nil, false)
+		}
+	}
 	if backupURL != nil {
 		addRecoveryToPod(pod, token, m, cs, backupURL)
 	}
