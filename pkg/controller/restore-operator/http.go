@@ -72,13 +72,13 @@ func (r *Restore) serveBackup(ctx context.Context, w http.ResponseWriter, req *h
 
 	v, exists, err := r.indexer.Get(obj)
 	if err != nil {
-		return fmt.Errorf("failed to get restore CR for restore-name (%v): %v", restoreName, err)
+		return fmt.Errorf("failed to get restore CR for restore-name (%s): %v", restoreName, err)
 	}
 	if !exists {
-		return fmt.Errorf("no restore CR found for restore-name (%v)", restoreName)
+		return fmt.Errorf("no restore CR found for restore-name (%s)", restoreName)
 	}
 
-	logrus.Infof("serving backup for restore CR %v", restoreName)
+	logrus.Infof("serving backup for restore CR %s", restoreName)
 	cr := v.(*api.EtcdRestore)
 
 	var (
@@ -165,7 +165,7 @@ func (r *Restore) serveBackup(ctx context.Context, w http.ResponseWriter, req *h
 
 	rc, err := backupReader.Open(path)
 	if err != nil {
-		return fmt.Errorf("failed to read backup file(%v): %v", path, err)
+		return fmt.Errorf("failed to read backup file(%s): %v", path, err)
 	}
 	defer rc.Close()
 
