@@ -70,7 +70,7 @@ jobs:
           load: true
           cache-to: type=gha
       -
-        uses: AbsaOSS/k3d-action@v2
+        uses: AbsaOSS/k3d-action@v2.3.0
         name: "Create single k3d Cluster"
         with:
           cluster-name: test-cluster-1
@@ -78,7 +78,7 @@ jobs:
             --image docker.io/rancher/k3s:v1.25.0-k3s1
             --agents 1
             --no-lb
-            --k3s-arg "--no-deploy=traefik,servicelb,metrics-server@server:*"
+            --k3s-arg "--disable=traefik,servicelb,metrics-server@server:*"
       -
         name: Test
         run: |
