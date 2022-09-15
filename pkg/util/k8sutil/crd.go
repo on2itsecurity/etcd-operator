@@ -105,7 +105,7 @@ func WaitCRDReady(ctx context.Context, clientset apiextensionsclient.Interface, 
 				}
 			case apiextensionsv1.NamesAccepted:
 				if cond.Status == apiextensionsv1.ConditionFalse {
-					return false, fmt.Errorf("Name conflict: %v", cond.Reason)
+					return false, fmt.Errorf("name conflict: %v", cond.Reason)
 				}
 			}
 		}

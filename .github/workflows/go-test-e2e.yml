@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Set up Go 1.18
+        name: Set up Go 1.19
         uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.19
         id: go
       -
         name: Check out code into the Go module directory
@@ -70,15 +70,15 @@ jobs:
           load: true
           cache-to: type=gha
       -
-        uses: AbsaOSS/k3d-action@v2
+        uses: AbsaOSS/k3d-action@v2.3.0
         name: "Create single k3d Cluster"
         with:
           cluster-name: test-cluster-1
           args: >-
-            --image docker.io/rancher/k3s:v1.24.1-k3s1
+            --image docker.io/rancher/k3s:v1.25.0-k3s1
             --agents 1
             --no-lb
-            --k3s-arg "--no-deploy=traefik,servicelb,metrics-server@server:*"
+            --k3s-arg "--disable=traefik,servicelb,metrics-server@server:*"
       -
         name: Test
         run: |

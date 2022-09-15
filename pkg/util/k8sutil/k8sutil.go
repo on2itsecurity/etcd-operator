@@ -29,7 +29,7 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
-	policyv1beta1 "k8s.io/api/policy/v1beta1"
+	policyv1 "k8s.io/api/policy/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -262,15 +262,15 @@ func newEtcdServiceManifest(svcName, clusterName, clusterIP string, ports []v1.S
 	return svc
 }
 
-func newEtcdPodDisruptionBudgetManifest(pdbName, clusterName string, minAvailable *intstr.IntOrString) *policyv1beta1.PodDisruptionBudget {
+func newEtcdPodDisruptionBudgetManifest(pdbName, clusterName string, minAvailable *intstr.IntOrString) *policyv1.PodDisruptionBudget {
 	labels := LabelsForCluster(clusterName)
 
-	pdb := &policyv1beta1.PodDisruptionBudget{
+	pdb := &policyv1.PodDisruptionBudget{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   pdbName,
 			Labels: labels,
 		},
-		Spec: policyv1beta1.PodDisruptionBudgetSpec{
+		Spec: policyv1.PodDisruptionBudgetSpec{
 			MinAvailable: minAvailable,
 			Selector: &metav1.LabelSelector{
 				MatchLabels: labels,
@@ -571,9 +571,9 @@ func UpdateOrCreatePodDisruptionBudget(ctx context.Context, kubecli kubernetes.I
 	addOwnerRefToObject(pdb.GetObjectMeta(), owner)
 
 	return retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		od, err := kubecli.PolicyV1beta1().PodDisruptionBudgets(namespace).Get(ctx, name, metav1.GetOptions{})
+		od, err := kubecli.PolicyV1().PodDisruptionBudgets(namespace).Get(ctx, name, metav1.GetOptions{})
 		if IsKubernetesResourceNotFoundError(err) {
-			_, err := kubecli.PolicyV1beta1().PodDisruptionBudgets(namespace).Create(ctx, pdb, metav1.CreateOptions{})
+			_, err := kubecli.PolicyV1().PodDisruptionBudgets(namespace).Create(ctx, pdb, metav1.CreateOptions{})
 			return err
 		}
 		if err != nil {
@@ -582,7 +582,7 @@ func UpdateOrCreatePodDisruptionBudget(ctx context.Context, kubecli kubernetes.I
 
 		pdb.Status = od.Status
 		pdb.ObjectMeta.ResourceVersion = od.ObjectMeta.ResourceVersion // Optimistic locking
-		_, err = kubecli.PolicyV1beta1().PodDisruptionBudgets(namespace).Update(ctx, pdb, metav1.UpdateOptions{})
+		_, err = kubecli.PolicyV1().PodDisruptionBudgets(namespace).Update(ctx, pdb, metav1.UpdateOptions{})
 
 		return err
 	})

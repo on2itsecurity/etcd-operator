@@ -1,5 +1,5 @@
-ARG alpinever=3.15
-FROM golang:1.18-alpine$alpinever AS build-base
+ARG alpinever=3.16
+FROM golang:1.19-alpine$alpinever AS build-base
 # Install SSL ca certificates.
 # Ca-certificates is required to call HTTPS endpoints.
 RUN apk update && apk add --no-cache ca-certificates git gcc musl-dev
@@ -37,7 +37,7 @@ RUN adduser \
 
 
 FROM build-base AS env-test
-ARG KUBERNETES=v1.23.5
+ARG KUBERNETES=v1.25.0
 
 ADD https://storage.googleapis.com/kubernetes-release/release/$KUBERNETES/bin/linux/amd64/kubectl /bin/
 RUN chmod +x /bin/kubectl
