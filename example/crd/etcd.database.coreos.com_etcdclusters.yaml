@@ -1544,9 +1544,9 @@ spec:
                 description: "Version is the expected version of the etcd cluster.
                   The etcd-operator will eventually make the etcd cluster version
                   equal to the expected version. \n The version must follow the [semver](http://semver.org)
-                  format, prefixed with \"v\", for example \"v3.5.4\". Only etcd released
+                  format, prefixed with \"v\", for example \"v3.5.5\". Only etcd released
                   versions are supported: https://github.com/etcd-io/etcd/releases
-                  \n If version is not set, default is \"v3.5.4\"."
+                  \n If version is not set, default is \"v3.5.5\"."
                 type: string
             required:
             - size
