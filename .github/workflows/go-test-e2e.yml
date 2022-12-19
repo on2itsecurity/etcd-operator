@@ -70,7 +70,7 @@ jobs:
           load: true
           cache-to: type=gha
       -
-        uses: AbsaOSS/k3d-action@v2.3.0
+        uses: AbsaOSS/k3d-action@v2.4.0
         name: "Create single k3d Cluster"
         with:
           cluster-name: test-cluster-1
