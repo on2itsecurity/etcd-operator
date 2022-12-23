@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/storage v1.28.1
-	github.com/Azure/azure-sdk-for-go v67.1.0+incompatible
+	github.com/Azure/azure-sdk-for-go v67.2.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.28
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/aws/aws-sdk-go v1.44.98
