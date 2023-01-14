@@ -26,7 +26,6 @@ jobs:
         with:
           config: .github/buildkitd.toml
           version: v0.10.0
-          buildkitd-flags: --oci-worker-snapshotter=stargz
         uses: docker/setup-buildx-action@v2
 
       - name: Getting image tag
