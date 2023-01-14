@@ -1,4 +1,4 @@
-ARG alpinever=3.16
+ARG alpinever=3.17
 FROM golang:1.19-alpine$alpinever AS build-base
 # Install SSL ca certificates.
 # Ca-certificates is required to call HTTPS endpoints.
