@@ -13,7 +13,7 @@ RUN go mod vendor
 FROM build-base AS release-builder
 ARG REVISION=dev
 
-ENV CGO_ENABLED=1
+ENV CGO_ENABLED=0
 ENV GOOS=linux
 RUN mkdir -p /rootfs/usr/local/bin
 RUN mkdir -m 1777 /rootfs/tmp
