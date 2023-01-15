@@ -21,7 +21,8 @@ RUN go build --ldflags "-w -s -X 'github.com/on2itsecurity/etcd-operator/version
 RUN go build --ldflags "-w -s -X 'github.com/on2itsecurity/etcd-operator/version.GitSHA=$REVISION'" -o /rootfs/usr/local/bin/etcd-backup-operator github.com/on2itsecurity/etcd-operator/cmd/backup-operator
 RUN go build --ldflags "-w -s -X 'github.com/on2itsecurity/etcd-operator/version.GitSHA=$REVISION'" -o /rootfs/usr/local/bin/etcd-restore-operator github.com/on2itsecurity/etcd-operator/cmd/restore-operator
 # ldd will sort out all need libraries, we output only the library path, create directories in /rootfs, and copy the libraries to /rootfs
-RUN ldd /rootfs/usr/local/bin/*-operator | grep "=> /" | awk '{print $3}' | xargs -i sh -c 'mkdir -p $(dirname "/rootfs{}"); cp -a "{}" "/rootfs{}"'
+# enable when CGO_ENABLED=1
+#RUN ldd /rootfs/usr/local/bin/*-operator | grep "=> /" | awk '{print $3}' | xargs -i sh -c 'mkdir -p $(dirname "/rootfs{}"); cp -a "{}" "/rootfs{}"'
 
 FROM alpine:$alpinever AS env-builder
 ENV USER=etcd-operator
