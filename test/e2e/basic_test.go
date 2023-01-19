@@ -128,7 +128,7 @@ func TestEtcdUpgrade(t *testing.T) {
 
 	targetVersion := "v3.5.6"
 	updateFunc := func(cl *api.EtcdCluster) {
-		cl = e2eutil.ClusterWithVersion(cl, targetVersion)
+		_ = e2eutil.ClusterWithVersion(cl, targetVersion)
 	}
 	_, err = e2eutil.UpdateCluster(f.CRClient, testEtcd, 10, updateFunc)
 	if err != nil {

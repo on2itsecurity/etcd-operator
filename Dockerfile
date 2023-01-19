@@ -21,7 +21,8 @@ RUN go build --ldflags "-w -s -X 'github.com/on2itsecurity/etcd-operator/version
 RUN go build --ldflags "-w -s -X 'github.com/on2itsecurity/etcd-operator/version.GitSHA=$REVISION'" -o /rootfs/usr/local/bin/etcd-backup-operator github.com/on2itsecurity/etcd-operator/cmd/backup-operator
 RUN go build --ldflags "-w -s -X 'github.com/on2itsecurity/etcd-operator/version.GitSHA=$REVISION'" -o /rootfs/usr/local/bin/etcd-restore-operator github.com/on2itsecurity/etcd-operator/cmd/restore-operator
 # ldd will sort out all need libraries, we output only the library path, create directories in /rootfs, and copy the libraries to /rootfs
-RUN ldd /rootfs/usr/local/bin/*-operator | grep "=> /" | awk '{print $3}' | xargs -i sh -c 'mkdir -p $(dirname "/rootfs{}"); cp -a "{}" "/rootfs{}"'
+# use when CGO_ENABLED=1
+RUN [ CGO_ENABLED==1 ] && ldd /rootfs/usr/local/bin/*-operator | grep "=> /" | awk '{print $3}' | xargs -i sh -c 'mkdir -p $(dirname "/rootfs{}"); cp -a "{}" "/rootfs{}"'
 
 FROM alpine:$alpinever AS env-builder
 ENV USER=etcd-operator
@@ -37,7 +38,7 @@ RUN adduser \
 
 
 FROM build-base AS env-test
-ARG KUBERNETES=v1.26.0
+ARG KUBERNETES=v1.26.1
 
 ADD https://storage.googleapis.com/kubernetes-release/release/$KUBERNETES/bin/linux/amd64/kubectl /bin/
 RUN chmod +x /bin/kubectl
