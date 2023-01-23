@@ -68,7 +68,9 @@ func main() {
 	logrus.Infof("Go OS/Arch: %s/%s", runtime.GOOS, runtime.GOARCH)
 	logrus.Infof("etcd-restore-operator Version: %v", version.Version)
 	logrus.Infof("Git SHA: %s", version.GitSHA)
-
+	if createCRD {
+		logrus.Infof("NOTICE: create-crd is set to true by default, this is going to change in a future versions and create-crd will be deprecated. Please use the crds in example/crd.")
+	}
 	kubecli := k8sutil.MustNewKubeClient()
 
 	err = createServiceForMyself(context.TODO(), kubecli, name, namespace)
