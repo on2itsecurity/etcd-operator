@@ -15,16 +15,16 @@ spec:
         app: etcd-backup-operator
     spec:
       containers:
-      - name: etcd-backup-operator
-        image: ghcr.io/on2itsecurity/etcd-operator:v1.2.1@sha256:6c219beb819b069ad250ceb7a3ae6151b7c342d8d2b3257df5c4599b83eb1af0
-        command:
-        - etcd-backup-operator
-        env:
-        - name: MY_POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: MY_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
+        - name: etcd-backup-operator
+          image: ghcr.io/on2itsecurity/etcd-operator:v1.2.2
+          command:
+          - etcd-backup-operator
+          env:
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
