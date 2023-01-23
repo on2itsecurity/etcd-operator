@@ -16,20 +16,20 @@ Set up basic service account for etcd operator:
 $ kubectl create -f example/serviceaccount.yaml
 ```
 
+## Set up CRDs
+
+Set up custom resource definitions for the etcd operator
+
+```bash
+$ kubectl create -f example/crd/etcd.database.coreos.com_etcdclusters.yaml
+```
+
 ## Install etcd operator
 
 Create a deployment for etcd operator:
 
 ```bash
 $ kubectl create -f example/deployment.yaml
-```
-
-etcd operator will automatically create a Kubernetes Custom Resource Definition (CRD):
-
-```bash
-$ kubectl get customresourcedefinitions
-NAME                                    KIND
-etcdclusters.etcd.database.coreos.com   CustomResourceDefinition.v1beta1.apiextensions.k8s.io
 ```
 
 ## Uninstall etcd operator
@@ -45,8 +45,7 @@ Clean up etcd operator:
 ```bash
 kubectl delete -f example/deployment.yaml
 kubectl delete -f example/serviceaccount.yaml
-kubectl delete endpoints etcd-operator
-kubectl delete crd etcdclusters.etcd.database.coreos.com
+kubectl delete -f example/crd/etcd.database.coreos.com_etcdclusters.yaml
 kubectl delete clusterrole etcd-operator
 kubectl delete clusterrolebinding etcd-operator
 ```

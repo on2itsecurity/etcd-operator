@@ -15,6 +15,7 @@ The permission model required for the etcd operator depends on the value of its 
   - In this mode the operator requires a ClusterRole with the permission to create a CRD.
 - `--create-crd=false` Creates a CR without first creating a CRD.
   - In this mode the operator can be run with just a Role without the permission to create a CRD.
+  - Make sure to apply the crd in `example/crd`
 
 ## Set up RBAC
 
