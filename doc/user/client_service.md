@@ -15,8 +15,7 @@ The client service is of type `ClusterIP` and accessible only from within the Ku
 For example, access the service from a pod in the cluster:
 
 ```
-$ kubectl run --rm -i --tty fun --image quay.io/coreos/etcd --restart=Never -- /bin/sh
-/ # ETCDCTL_API=3 etcdctl --endpoints http://example-etcd-cluster-client:2379 put foo bar
+$ kubectl run --rm  --tty fun --image quay.io/coreos/etcd --restart=Never -- etcdctl --endpoints http://example-etcd-cluster-client:2379 put foo bar
 OK
 (ctrl-D to exit)
 ```
