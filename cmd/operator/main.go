@@ -96,7 +96,9 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("failed to get hostname: %v", err)
 	}
-
+	if createCRD {
+		logrus.Infof("NOTICE: create-crd is set to true by default, this is going to change in a future versions and create-crd will be deprecated. Please use the crds in example/crd.")
+	}
 	kubecli := k8sutil.MustNewKubeClient()
 
 	http.HandleFunc(probe.HTTPReadyzEndpoint, probe.ReadyzHandler)

@@ -17,6 +17,7 @@ package k8sutil
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	api "github.com/on2itsecurity/etcd-operator/pkg/apis/etcd/v1beta2"
 	"github.com/on2itsecurity/etcd-operator/pkg/util/etcdutil"
@@ -70,18 +71,18 @@ func containerWithRequirements(c v1.Container, r v1.ResourceRequirements) v1.Con
 
 func newEtcdProbe(isSecure, isTLSSecret bool) *v1.Probe {
 	// etcd pod is healthy only if it can participate in consensus
-	cmd := "ETCDCTL_API=3 etcdctl endpoint status"
+	cmd := "etcdctl endpoint status"
 	if isSecure {
 		tlsFlags := fmt.Sprintf("--cert=%[1]s/%[2]s --key=%[1]s/%[3]s --cacert=%[1]s/%[4]s", operatorEtcdTLSDir, etcdutil.CliCertFile, etcdutil.CliKeyFile, etcdutil.CliCAFile)
 		if isTLSSecret {
 			tlsFlags = fmt.Sprintf("--cert=%[1]s/%[2]s --key=%[1]s/%[3]s --cacert=%[1]s/%[4]s", operatorEtcdTLSDir, "tls.crt", "tls.key", "ca.crt")
 		}
-		cmd = fmt.Sprintf("ETCDCTL_API=3 etcdctl --endpoints=https://localhost:%d %s endpoint status", EtcdClientPort, tlsFlags)
+		cmd = fmt.Sprintf("etcdctl --endpoints=https://localhost:%d %s endpoint status", EtcdClientPort, tlsFlags)
 	}
 	return &v1.Probe{
 		ProbeHandler: v1.ProbeHandler{
 			Exec: &v1.ExecAction{
-				Command: []string{"/bin/sh", "-ec", cmd},
+				Command: strings.Split(cmd, " "),
 			},
 		},
 		InitialDelaySeconds: 10,

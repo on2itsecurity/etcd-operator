@@ -108,7 +108,7 @@ func TestEtcdUpgrade(t *testing.T) {
 	}
 	f := framework.Global
 	origEtcd := e2eutil.NewCluster("test-etcd-", 3)
-	origEtcd = e2eutil.ClusterWithVersion(origEtcd, "v3.2.13")
+	origEtcd = e2eutil.ClusterWithVersion(origEtcd, "v3.3.25")
 	origEtcd.Spec.Repository = "gcr.io/etcd-development/etcd"
 	testEtcd, err := e2eutil.CreateCluster(t, context.Background(), f.CRClient, f.Namespace, origEtcd)
 	if err != nil {
@@ -121,12 +121,12 @@ func TestEtcdUpgrade(t *testing.T) {
 		}
 	}()
 
-	err = e2eutil.WaitSizeAndVersionReached(t, context.Background(), f.KubeClient, "v3.2.13", 3, f.RetryAttempts, testEtcd)
+	err = e2eutil.WaitSizeAndVersionReached(t, context.Background(), f.KubeClient, "v3.3.25", 3, f.RetryAttempts, testEtcd)
 	if err != nil {
 		t.Fatalf("failed to create 3 members etcd cluster: %v", err)
 	}
 
-	targetVersion := "v3.5.6"
+	targetVersion := "v3.5.7"
 	updateFunc := func(cl *api.EtcdCluster) {
 		_ = e2eutil.ClusterWithVersion(cl, targetVersion)
 	}
