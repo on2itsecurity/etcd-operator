@@ -1,3 +1,28 @@
+# Changelog
+
+## [1.2.2](https://github.com/on2itsecurity/etcd-operator/compare/v1.2.1...v1.2.2) (2023-01-23)
+
+### Must Reads
+* Upgrade to 1.2.2 before upgrading etcd to 3.5.7 ([14c27ce](https://github.com/on2itsecurity/etcd-operator/commit/14c27ceb08b2bd496546fbcddcd0e20ee6958e58))
+* Dropped etcd 3.2 support ([14c27ce](https://github.com/on2itsecurity/etcd-operator/commit/14c27ceb08b2bd496546fbcddcd0e20ee6958e58))
+* Next version will not create crds, use manifests from `example/crd` for new installs ([945971e](https://github.com/on2itsecurity/etcd-operator/commit/945971ed5a3ab5d659ab1db4375c7924db8c5f37))
+
+### Bug Fixes
+* openapi validation fixes ([b9f8821](https://github.com/on2itsecurity/etcd-operator/commit/b9f8821a7c23d9d7050eeab52ba197ea2c3fd7e9))
+* do not continue making a pod when an error occurs. closes issue #80 ([2498fd5](https://github.com/on2itsecurity/etcd-operator/commit/2498fd5d8127d86167e4d573e684a1c550a7da61))
+
+### Features
+* crds are now generated as yaml with openapi support, applying it manually means etcd-operator can be started with `-create-crd=false` and https://github.com/on2itsecurity/etcd-operator/blob/f378e398dce7bc4546e8ade3c156c0d7d6e33850/example/rbac/cluster-role-template.yaml#L14-L19 can be removed  ([5a2ef43](https://github.com/on2itsecurity/etcd-operator/commit/5a2ef4f34594643370956570365b15c4a640ed73))
+* pvc support in restore ([614ea03](https://github.com/on2itsecurity/etcd-operator/commit/614ea035d00f8d4788a2bde4fb7401ad0c1b34b9))
+* build against Golang 1.19 ([6750543](https://github.com/on2itsecurity/etcd-operator/commit/6750543af27f095ef491087e20122398997de23f))
+* Kubernetes 1.25 compatibility & test against ([c8d20c1](https://github.com/on2itsecurity/etcd-operator/commit/c8d20c16b9fe4b08b4c48ba7ed4f4361f001145c))
+* Test on Kubernetes 1.26 ([4e88f0a](https://github.com/on2itsecurity/etcd-operator/commit/4e88f0a77e208253894136df616b78336d4152c8))
+* Use Kubernetes 1.26 Libraries ([4532bff](https://github.com/on2itsecurity/etcd-operator/commit/4532bff0b574a879f3c558c0386e72411333023d))
+* Default to etcd 3.5.6 + test against ([24cfdf0](https://github.com/on2itsecurity/etcd-operator/commit/24cfdf0b2d188201b6cda606e9d7ada763c4e941))
+* Upgrade alpine to 3.17 ([36b086d](https://github.com/on2itsecurity/etcd-operator/commit/36b086d389fb3674dd49b4508073b44b541ec652))
+* Build without linking to musl ([1042088](https://github.com/on2itsecurity/etcd-operator/commit/1042088a4f41e5828ef23579a7fa6e191cd1131f))
+* Add notice for create-crd=true ([81032db](https://github.com/on2itsecurity/etcd-operator/commit/81032dbf8879e0ec8f0b2367b71f1f758c992126))
+
 ## [1.2.1](https://github.com/on2itsecurity/etcd-operator/compare/v1.2.0...v1.2.1) (2022-05-19)
 
 ### Bug Fixes
