@@ -38,7 +38,7 @@ RUN adduser \
 
 
 FROM build-base AS env-test
-ARG KUBERNETES=v1.27.0
+ARG KUBERNETES=v1.27.1
 
 ADD https://storage.googleapis.com/kubernetes-release/release/$KUBERNETES/bin/linux/amd64/kubectl /bin/
 RUN chmod +x /bin/kubectl
