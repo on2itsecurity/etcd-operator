@@ -35,7 +35,7 @@ See the [Resources and Labels](./doc/user/resource_labels.md) doc for an overvie
 
 ## Requirements
 
-- Kubernetes 1.23+ (may work perfectly fine on older versions just no effort will be made to be compatible)
+- Kubernetes 1.24+
 - etcd 3.3.25+
 
 ## Demo
