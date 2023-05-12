@@ -20,7 +20,7 @@ import (
 
 	"github.com/on2itsecurity/etcd-operator/pkg/util/k8sutil"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -35,7 +35,9 @@ func (c *Cluster) upgradeOneMember(ctx context.Context, memberName string) error
 		return fmt.Errorf("fail to get pod (%s): %v", memberName, err)
 	}
 	oldpod := pod.DeepCopy()
-
+	if pod.Spec.Containers[0].LivenessProbe != nil && pod.Spec.Containers[0].LivenessProbe.Exec != nil && pod.Spec.Containers[0].LivenessProbe.Exec.Command[0] == "/bin/sh" {
+		return fmt.Errorf("etcd liveness probe is using shell, can't upgrade as new image doesn't have busybox. Please recreate the cluster or delete one pod at a time")
+	}
 	c.logger.Infof("upgrading the etcd member %v from %s to %s", memberName, k8sutil.GetEtcdVersion(pod), c.cluster.Spec.Version)
 	pod.Spec.Containers[0].Image = k8sutil.ImageName(c.cluster.Spec.Repository, c.cluster.Spec.Version)
 	k8sutil.SetEtcdVersion(pod, c.cluster.Spec.Version)
