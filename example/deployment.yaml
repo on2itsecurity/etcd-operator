@@ -46,16 +46,21 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 3
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
                 drop:
                   - ALL
             readOnlyRootFilesystem: true
-            runAsUser: 1000
-            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
           volumeMounts:
             - name: "tmp"
               mountPath: "/tmp" # Only needed when using TLS
       serviceAccountName: etcd-operator
+      securityContext:
+        runAsUser: 12381
+        runAsGroup: 12381
+        runAsNonRoot: true
       volumes:
         - name: "tmp"
           emptyDir: {}

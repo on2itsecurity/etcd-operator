@@ -5,6 +5,10 @@ metadata:
 spec:
   restartPolicy: Never
   serviceAccountName: etcd-operator
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 12381
+    runAsGroup: 12381
   containers:
   - name: <POD_NAME>
     image: <TEST_IMAGE>
@@ -14,7 +18,15 @@ spec:
       requests:
         cpu: 250m
       limits:
-        cpu: 1
+        cpu: 2
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      #readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
     env:
       - name: TEST_NAMESPACE
         valueFrom:
