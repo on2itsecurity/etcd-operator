@@ -397,18 +397,20 @@ func newEtcdPod(ctx context.Context, kubecli kubernetes.Interface, m *etcdutil.M
 		}
 		isTLSSecret = secret.Type == v1.SecretTypeTLS
 	}
-	livenessProbe := newEtcdProbe(cs.TLS.IsSecureClient(), isTLSSecret)
-	readinessProbe := newEtcdProbe(cs.TLS.IsSecureClient(), isTLSSecret)
-	readinessProbe.InitialDelaySeconds = 1
-	readinessProbe.InitialDelaySeconds = 1
-	readinessProbe.TimeoutSeconds = 5
-	readinessProbe.PeriodSeconds = 5
-	readinessProbe.FailureThreshold = 3
+	livenessProbe := newEtcdProbe(cs.TLS.IsSecureClient(), isTLSSecret, false)
+	readinessProbe := newEtcdProbe(cs.TLS.IsSecureClient(), isTLSSecret, false)
+	startupProbe := newEtcdProbe(cs.TLS.IsSecureClient(), isTLSSecret, true)
+
+	readinessProbe.PeriodSeconds = 3
+	livenessProbe.PeriodSeconds = 15
+	startupProbe.FailureThreshold = 30
+	startupProbe.InitialDelaySeconds = 0
 
 	container := containerWithProbes(
 		etcdContainer(strings.Split(commands, " "), cs.Repository, cs.Version),
 		livenessProbe,
-		readinessProbe)
+		readinessProbe,
+		startupProbe)
 
 	volumes := []v1.Volume{}
 

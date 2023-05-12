@@ -68,9 +68,10 @@ func etcdContainer(cmd []string, repo, version string) v1.Container {
 	return c
 }
 
-func containerWithProbes(c v1.Container, lp *v1.Probe, rp *v1.Probe) v1.Container {
+func containerWithProbes(c v1.Container, lp *v1.Probe, rp *v1.Probe, sp *v1.Probe) v1.Container {
 	c.LivenessProbe = lp
 	c.ReadinessProbe = rp
+	c.StartupProbe = sp
 	return c
 }
 
@@ -79,26 +80,42 @@ func containerWithRequirements(c v1.Container, r v1.ResourceRequirements) v1.Con
 	return c
 }
 
-func newEtcdProbe(isSecure, isTLSSecret bool) *v1.Probe {
-	// etcd pod is healthy only if it can participate in consensus
-	cmd := "etcdctl endpoint status"
+func newEtcdProbe(isSecure, isTLSSecret bool, startupProbe bool) *v1.Probe {
+	var timeout int32 = 1
+	var periodSeconds int32 = 5
+
+	if startupProbe && !isSecure {
+		periodSeconds = 1
+	}
+
+	probeHandler := v1.ProbeHandler{
+		GRPC: &v1.GRPCAction{
+			Port: int32(EtcdClientPort),
+		},
+	}
+
 	if isSecure {
+		timeout = 5
 		tlsFlags := fmt.Sprintf("--cert=%[1]s/%[2]s --key=%[1]s/%[3]s --cacert=%[1]s/%[4]s", operatorEtcdTLSDir, etcdutil.CliCertFile, etcdutil.CliKeyFile, etcdutil.CliCAFile)
 		if isTLSSecret {
 			tlsFlags = fmt.Sprintf("--cert=%[1]s/%[2]s --key=%[1]s/%[3]s --cacert=%[1]s/%[4]s", operatorEtcdTLSDir, "tls.crt", "tls.key", "ca.crt")
 		}
-		cmd = fmt.Sprintf("etcdctl --endpoints=https://localhost:%d %s endpoint status", EtcdClientPort, tlsFlags)
-	}
-	return &v1.Probe{
-		ProbeHandler: v1.ProbeHandler{
+		cmd := fmt.Sprintf("etcdctl --endpoints=https://localhost:%d %s endpoint status", EtcdClientPort, tlsFlags)
+
+		probeHandler = v1.ProbeHandler{
 			Exec: &v1.ExecAction{
 				Command: strings.Split(cmd, " "),
 			},
-		},
-		InitialDelaySeconds: 10,
-		TimeoutSeconds:      10,
-		PeriodSeconds:       60,
+		}
+	}
+
+	return &v1.Probe{
+		ProbeHandler:        probeHandler,
+		InitialDelaySeconds: 1,
+		TimeoutSeconds:      timeout,
+		PeriodSeconds:       periodSeconds,
 		FailureThreshold:    3,
+		SuccessThreshold:    1,
 	}
 }
 
