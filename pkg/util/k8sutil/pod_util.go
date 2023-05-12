@@ -52,6 +52,16 @@ func etcdContainer(cmd []string, repo, version string) v1.Container {
 				Protocol:      v1.ProtocolTCP,
 			},
 		},
+		SecurityContext: &v1.SecurityContext{
+			AllowPrivilegeEscalation: func(b bool) *bool { return &b }(false),
+			Capabilities: &v1.Capabilities{
+				Drop: []v1.Capability{"ALL"},
+			},
+			ReadOnlyRootFilesystem: func(b bool) *bool { return &b }(true),
+			SeccompProfile: &v1.SeccompProfile{
+				Type: v1.SeccompProfileTypeRuntimeDefault,
+			},
+		},
 		VolumeMounts: etcdVolumeMounts(),
 	}
 

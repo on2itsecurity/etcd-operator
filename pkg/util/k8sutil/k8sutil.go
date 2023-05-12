@@ -469,6 +469,16 @@ func newEtcdPod(ctx context.Context, kubecli kubernetes.Interface, m *etcdutil.M
 				        fi
 						sleep 1
 					done`, DNSTimeout, m.Addr())},
+				SecurityContext: &v1.SecurityContext{
+					AllowPrivilegeEscalation: func(b bool) *bool { return &b }(false),
+					Capabilities: &v1.Capabilities{
+						Drop: []v1.Capability{"ALL"},
+					},
+					ReadOnlyRootFilesystem: func(b bool) *bool { return &b }(true),
+					SeccompProfile: &v1.SeccompProfile{
+						Type: v1.SeccompProfileTypeRuntimeDefault,
+					},
+				},
 			}},
 			Containers:    []v1.Container{container},
 			RestartPolicy: v1.RestartPolicyNever,
@@ -488,7 +498,11 @@ func newEtcdPod(ctx context.Context, kubecli kubernetes.Interface, m *etcdutil.M
 
 func podSecurityContext(podPolicy *api.PodPolicy) *v1.PodSecurityContext {
 	if podPolicy == nil {
-		return nil
+		return &v1.PodSecurityContext{
+			RunAsUser:    &[]int64{12379}[0],
+			RunAsGroup:   &[]int64{12379}[0],
+			RunAsNonRoot: func(b bool) *bool { return &b }(true),
+		}
 	}
 	return podPolicy.SecurityContext
 }
