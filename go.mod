@@ -3,7 +3,7 @@ module github.com/on2itsecurity/etcd-operator
 go 1.19
 
 require (
-	cloud.google.com/go/storage v1.30.1
+	cloud.google.com/go/storage v1.31.0
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.29
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
@@ -29,7 +29,7 @@ require (
 	cloud.google.com/go v0.110.2 // indirect
 	cloud.google.com/go/compute v1.20.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	cloud.google.com/go/iam v0.13.0 // indirect
+	cloud.google.com/go/iam v1.1.0 // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.9.22 // indirect
 	github.com/Azure/go-autorest/autorest/date v0.3.0 // indirect
