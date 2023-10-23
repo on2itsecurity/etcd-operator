@@ -120,6 +120,10 @@ func truePointer() *bool {
 	bool := true
 	return &bool
 }
+func falsePointer() *bool {
+	bool := false
+	return &bool
+}
 
 func MustNewKubeExtClient() apiextensionsclient.Interface {
 	cfg, err := InClusterConfig()
