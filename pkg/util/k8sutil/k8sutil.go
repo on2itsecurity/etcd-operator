@@ -500,7 +500,7 @@ func newEtcdPod(ctx context.Context, kubecli kubernetes.Interface, m *etcdutil.M
 }
 
 func podSecurityContext(podPolicy *api.PodPolicy) *v1.PodSecurityContext {
-	if podPolicy == nil {
+	if podPolicy == nil || podPolicy.SecurityContext == nil {
 		return &v1.PodSecurityContext{
 			RunAsUser:    &[]int64{12379}[0],
 			RunAsGroup:   &[]int64{12379}[0],
