@@ -472,11 +472,11 @@ func newEtcdPod(ctx context.Context, kubecli kubernetes.Interface, m *etcdutil.M
 						sleep 1
 					done`, DNSTimeout, m.Addr())},
 				SecurityContext: &v1.SecurityContext{
-					AllowPrivilegeEscalation: func(b bool) *bool { return &b }(false),
+					AllowPrivilegeEscalation: falsePointer(),
 					Capabilities: &v1.Capabilities{
 						Drop: []v1.Capability{"ALL"},
 					},
-					ReadOnlyRootFilesystem: func(b bool) *bool { return &b }(true),
+					ReadOnlyRootFilesystem: truePointer(),
 					SeccompProfile: &v1.SeccompProfile{
 						Type: v1.SeccompProfileTypeRuntimeDefault,
 					},
@@ -490,7 +490,8 @@ func newEtcdPod(ctx context.Context, kubecli kubernetes.Interface, m *etcdutil.M
 			// `etcd-795649v9kq.etcd.default.svc`.
 			Hostname:                     m.Name,
 			Subdomain:                    clusterName,
-			AutomountServiceAccountToken: func(b bool) *bool { return &b }(false),
+			EnableServiceLinks:           falsePointer(),
+			AutomountServiceAccountToken: falsePointer(),
 			SecurityContext:              podSecurityContext(cs.Pod),
 		},
 	}
@@ -503,7 +504,7 @@ func podSecurityContext(podPolicy *api.PodPolicy) *v1.PodSecurityContext {
 		return &v1.PodSecurityContext{
 			RunAsUser:    &[]int64{12379}[0],
 			RunAsGroup:   &[]int64{12379}[0],
-			RunAsNonRoot: func(b bool) *bool { return &b }(true),
+			RunAsNonRoot: truePointer(),
 		}
 	}
 	return podPolicy.SecurityContext

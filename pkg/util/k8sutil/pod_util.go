@@ -55,11 +55,11 @@ func etcdContainer(cmd []string, repo, version string) v1.Container {
 			},
 		},
 		SecurityContext: &v1.SecurityContext{
-			AllowPrivilegeEscalation: func(b bool) *bool { return &b }(false),
+			AllowPrivilegeEscalation: falsePointer(),
 			Capabilities: &v1.Capabilities{
 				Drop: []v1.Capability{"ALL"},
 			},
-			ReadOnlyRootFilesystem: func(b bool) *bool { return &b }(true),
+			ReadOnlyRootFilesystem: truePointer(),
 			SeccompProfile: &v1.SeccompProfile{
 				Type: v1.SeccompProfileTypeRuntimeDefault,
 			},
