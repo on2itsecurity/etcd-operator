@@ -56,6 +56,7 @@ spec:
           volumeMounts:
             - name: "tmp"
               mountPath: "/tmp" # Only needed when using TLS
+      enableServiceLinks: false
       serviceAccountName: etcd-operator
       securityContext:
         runAsUser: 12381
