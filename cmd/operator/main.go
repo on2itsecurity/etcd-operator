@@ -33,8 +33,10 @@ import (
 	"github.com/on2itsecurity/etcd-operator/version"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	_ "github.com/KimMachineGun/automemlimit"
 	"github.com/sirupsen/logrus"
 	_ "go.uber.org/automaxprocs"
+
 	"golang.org/x/time/rate"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"

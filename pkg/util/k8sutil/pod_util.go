@@ -17,6 +17,7 @@ package k8sutil
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	api "github.com/on2itsecurity/etcd-operator/pkg/apis/etcd/v1beta2"
@@ -26,7 +27,8 @@ import (
 )
 
 const (
-	etcdVolumeName = "etcd-data"
+	etcdVolumeName         = "etcd-data"
+	goGCMemLimitPercentage = 95
 )
 
 func etcdVolumeMounts() []v1.VolumeMount {
@@ -119,6 +121,19 @@ func newEtcdProbe(isSecure, isTLSSecret bool, startupProbe bool) *v1.Probe {
 	}
 }
 
+func goGCEnvFromResources(resources v1.ResourceRequirements) (envVar v1.EnvVar) {
+	memoryLimit := resources.Limits[v1.ResourceMemory]
+	if memoryLimit.Value() > 0 {
+		gcMemLimit := memoryLimit.Value() * goGCMemLimitPercentage / 100
+		envVar = v1.EnvVar{
+			Name:  "GOMEMLIMIT",
+			Value: strconv.FormatInt(gcMemLimit, 10),
+		}
+	}
+
+	return envVar
+}
+
 func applyPodPolicy(clusterName string, pod *v1.Pod, policy *api.PodPolicy) {
 	if policy == nil {
 		return
@@ -144,7 +159,12 @@ func applyPodPolicy(clusterName string, pod *v1.Pod, policy *api.PodPolicy) {
 	for i := range pod.Spec.Containers {
 		pod.Spec.Containers[i] = containerWithRequirements(pod.Spec.Containers[i], policy.Resources)
 		if pod.Spec.Containers[i].Name == "etcd" {
-			pod.Spec.Containers[i].Env = append(pod.Spec.Containers[i].Env, policy.EtcdEnv...)
+			env := policy.EtcdEnv
+			if goEnv := goGCEnvFromResources(policy.Resources); goEnv.Value != "" {
+				env = append(env, goEnv)
+			}
+
+			pod.Spec.Containers[i].Env = append(pod.Spec.Containers[i].Env, env...)
 		}
 	}
 
