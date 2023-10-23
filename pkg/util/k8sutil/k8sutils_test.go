@@ -15,9 +15,12 @@
 package k8sutil
 
 import (
+	"strconv"
 	"testing"
 
 	api "github.com/on2itsecurity/etcd-operator/pkg/apis/etcd/v1beta2"
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 func TestDefaultBusyboxImageName(t *testing.T) {
@@ -81,5 +84,35 @@ func TestClientServiceNameWithNamePolicy(t *testing.T) {
 	expected := policy.Name
 	if svcName != expected {
 		t.Errorf("expect svcName=%s, got=%s", expected, svcName)
+	}
+}
+
+func TestGoGCEnvFromResources(t *testing.T) {
+	resources := v1.ResourceRequirements{
+		Limits: v1.ResourceList{
+			v1.ResourceMemory: resource.MustParse("1Gi"),
+		},
+	}
+
+	envVar := goGCEnvFromResources(resources)
+	expected := v1.EnvVar{
+		Name:  "GOMEMLIMIT",
+		Value: strconv.FormatInt(1024*1024*1024*goGCMemLimitPercentage/100, 10),
+	}
+	if envVar != expected {
+		t.Errorf("expect envVar=%v, got=%v", expected, envVar)
+	}
+}
+func TestGoGCEnvFromResourcesNoLimit(t *testing.T) {
+	resources := v1.ResourceRequirements{
+		Requests: v1.ResourceList{
+			v1.ResourceMemory: resource.MustParse("1Gi"),
+		},
+	}
+
+	envVar := goGCEnvFromResources(resources)
+	expected := v1.EnvVar{}
+	if envVar != expected {
+		t.Errorf("expect envVar=%v, got=%v", expected, envVar)
 	}
 }
