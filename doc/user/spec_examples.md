@@ -14,7 +14,7 @@ This will use the default version chosen by the etcd-operator.
 ```yaml
 spec:
   size: 3
-  version: "v3.2.13"
+  version: "v3.4.27"
 ```
 
 ## Three member cluster with node selector and anti-affinity across nodes
@@ -127,8 +127,10 @@ spec:
 
 ## Custom pod security context
 
+By Default etcd-operator runs etcd pods compliant to the [Pod Security Restricted](https://kubernetes.io/docs/concepts/security/pod-security-standards/) standard.
 For more information on pod security context see the Kubernetes [docs][pod-security-context].
 
+But you may change it to your needs:
 ```yaml
 spec:
   size: 3
@@ -139,6 +141,17 @@ spec:
       # The FSGroup is needed to let the etcd container access mounted volumes
       fsGroup: 9000
 ```
+
+To default to the old behavior (less secure), you may use:
+```yaml
+spec:
+  size: 3
+  pod:
+    securityContext:
+      runAsNonRoot: false
+```
+
+
 
 ## Custom PersistentVolumeClaim definition
 
