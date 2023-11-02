@@ -7,7 +7,7 @@ require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.29
 	github.com/KimMachineGun/automemlimit v0.3.0
-	github.com/aliyun/aliyun-oss-go-sdk v2.2.9+incompatible
+	github.com/aliyun/aliyun-oss-go-sdk v3.0.1+incompatible
 	github.com/aws/aws-sdk-go v1.46.1
 	github.com/pborman/uuid v1.2.1
 	github.com/pkg/errors v0.9.1
