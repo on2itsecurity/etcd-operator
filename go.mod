@@ -20,9 +20,9 @@ require (
 	golang.org/x/oauth2 v0.13.0
 	golang.org/x/time v0.4.0
 	google.golang.org/api v0.150.0
-	k8s.io/api v0.28.3
+	k8s.io/api v0.28.4
 	k8s.io/apiextensions-apiserver v0.28.3
-	k8s.io/apimachinery v0.28.3
+	k8s.io/apimachinery v0.28.4
 	k8s.io/client-go v0.28.3
 )
 
