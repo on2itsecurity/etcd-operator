@@ -28,5 +28,5 @@
 ## etcd upgrade policy
 
 - etcd supports rolling upgrade from one minor release version to its next minor release version. For example, we can directly upgrade etcd 3.3.24 to 3.4.27
-- etcd supports rolling upgrade within one minor release. For example, we can upgrade etcd 3.5.1 to 3.5.10.
+- etcd supports rolling upgrade within one minor release. For example, we can upgrade etcd 3.5.1 to 3.5.11.
 - etcd supports minor version upgrade unconcerned with patch version, e.g. from 3.4.1 to 3.5.0. Nonetheless it's recommended to upgrade from 3.4.1 to 3.4.n (n is latest) and then from 3.4.n to 3.5.0.
