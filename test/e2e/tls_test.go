@@ -20,15 +20,10 @@ import (
 	"math/rand"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/on2itsecurity/etcd-operator/test/e2e/e2eutil"
 	"github.com/on2itsecurity/etcd-operator/test/e2e/framework"
 )
-
-func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
-}
 
 func TestTLS(t *testing.T) {
 	if os.Getenv(envParallelTest) == envParallelTestTrue {
