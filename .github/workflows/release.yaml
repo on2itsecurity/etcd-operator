@@ -41,7 +41,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           tags: ghcr.io/${{ github.repository_owner }}/etcd-operator:${{ steps.tag.outputs.tag }}
