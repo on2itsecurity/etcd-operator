@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Set up Go 1.21
+        name: Set up Go 1.22
         uses: actions/setup-go@v5
         with:
-          go-version: 1.21
+          go-version: 1.22
         id: go
       -
         name: Check out code into the Go module directory
@@ -75,7 +75,7 @@ jobs:
         with:
           cluster-name: test-cluster-1
           args: >-
-            --image docker.io/rancher/k3s:v1.28.4-k3s2
+            --image docker.io/rancher/k3s:v1.30.2-rc1-k3s2
             --agents 1
             --no-lb
             --k3s-arg "--disable=traefik,servicelb,metrics-server@server:*"
