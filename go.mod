@@ -3,7 +3,7 @@ module github.com/on2itsecurity/etcd-operator
 go 1.22.4
 
 require (
-	cloud.google.com/go/storage v1.42.0
+	cloud.google.com/go/storage v1.43.0
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.11.29
 	github.com/KimMachineGun/automemlimit v0.6.1
