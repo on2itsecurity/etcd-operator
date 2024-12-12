@@ -25,8 +25,8 @@ jobs:
         name: Set up Docker Buildx
         id: buildx
         with:
-          config: .github/buildkitd.toml
-          version: v0.15.1
+          buildkitd-config: .github/buildkitd.toml
+          version: v0.19.2
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
