@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: v0.16.5
   name: etcdrestores.etcd.database.coreos.com
 spec:
   group: etcd.database.coreos.com
@@ -90,7 +90,6 @@ spec:
                       An access token with file name of 'access-token'.
                       JSON credentials with file name of 'credentials.json'.
 
-
                       If omitted, client will use the default application credentials.
                     type: string
                   path:
@@ -111,7 +110,6 @@ spec:
                       Endpoint is the OSS service endpoint on alibaba cloud, defaults to
                       "http://oss-cn-hangzhou.aliyuncs.com".
 
-
                       Details about regions and endpoints, see:
                        https://www.alibabacloud.com/help/doc-detail/31837.htm
                     type: string
@@ -120,14 +118,11 @@ spec:
                       The name of the secret object that stores the credential which will be used
                       to access Alibaba Cloud OSS.
 
-
                       The secret must contain the following keys/fields:
                           accessKeyID
                           accessKeySecret
 
-
                       The format of secret:
-
 
                         apiVersion: v1
                         kind: Secret
@@ -158,7 +153,6 @@ spec:
                       The file name of the credential MUST be 'credentials'.
                       The file name of the config MUST be 'config'.
                       The profile to use in both files will be 'default'.
-
 
                       AWSSecret overwrites the default etcd operator wide AWS credential and config.
                     type: string

@@ -1,5 +1,5 @@
-ARG alpinever=3.20
-FROM golang:1.22-alpine$alpinever AS build-base
+ARG alpinever=3.21
+FROM golang:1.23-alpine$alpinever AS build-base
 # Install SSL ca certificates.
 # Ca-certificates is required to call HTTPS endpoints.
 RUN apk update && apk add --no-cache ca-certificates git gcc musl-dev
@@ -38,9 +38,9 @@ RUN adduser \
 
 
 FROM build-base AS env-test
-ARG KUBERNETES=v1.30.2
+ARG KUBERNETES=v1.32.0
 
-ADD https://storage.googleapis.com/kubernetes-release/release/$KUBERNETES/bin/linux/amd64/kubectl /bin/
+ADD https://dl.k8s.io/release/$KUBERNETES/bin/linux/amd64/kubectl /bin/
 RUN chmod +x /bin/kubectl
 
 COPY test test
@@ -50,13 +50,13 @@ RUN go test ./test/e2e/ -c -o /bin/etcd-operator-e2e --race
 RUN go test ./test/e2e/e2eslow -c -o /bin/etcd-operator-e2eslow --race
 RUN go test ./test/e2e/upgradetest/  -c -o /bin/etcd-operator-upgradetest --race
 
-FROM alpine:$alpinever as test-e2e
+FROM alpine:$alpinever AS test-e2e
 RUN apk add --no-cache bash
 COPY hack hack
 COPY --from=env-test /bin/etcd-operator-* /bin
 COPY --from=env-test /bin/kubectl /bin
 
-FROM build-base as go-test
+FROM build-base AS go-test
 RUN go test github.com/on2itsecurity/etcd-operator/pkg/...
 
 FROM scratch
