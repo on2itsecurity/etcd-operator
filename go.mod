@@ -19,7 +19,7 @@ require (
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/oauth2 v0.24.0
 	golang.org/x/time v0.8.0
-	google.golang.org/api v0.211.0
+	google.golang.org/api v0.213.0
 	k8s.io/api v0.32.0
 	k8s.io/apiextensions-apiserver v0.32.0
 	k8s.io/apimachinery v0.32.0
@@ -29,9 +29,9 @@ require (
 require (
 	cel.dev/expr v0.19.1 // indirect
 	cloud.google.com/go v0.116.0 // indirect
-	cloud.google.com/go/auth v0.12.1 // indirect
+	cloud.google.com/go/auth v0.13.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.6 // indirect
-	cloud.google.com/go/compute/metadata v0.5.2 // indirect
+	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	cloud.google.com/go/iam v1.3.0 // indirect
 	cloud.google.com/go/monitoring v1.22.0 // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
