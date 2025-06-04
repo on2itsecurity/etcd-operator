@@ -102,13 +102,13 @@ func TestPauseControl(t *testing.T) {
 	}
 }
 
-func TestEtcdUpgrade(t *testing.T) {
+func TestEtcdUpgradeOld(t *testing.T) {
 	if os.Getenv(envParallelTest) == envParallelTestTrue {
 		t.Parallel()
 	}
 	f := framework.Global
 	origEtcd := e2eutil.NewCluster("test-etcd-", 3)
-	origEtcd = e2eutil.ClusterWithVersion(origEtcd, "v3.3.25")
+	origEtcd = e2eutil.ClusterWithVersion(origEtcd, "v3.4.37")
 	origEtcd.Spec.Repository = "gcr.io/etcd-development/etcd"
 	testEtcd, err := e2eutil.CreateCluster(t, context.Background(), f.CRClient, f.Namespace, origEtcd)
 	if err != nil {
@@ -121,12 +121,52 @@ func TestEtcdUpgrade(t *testing.T) {
 		}
 	}()
 
-	err = e2eutil.WaitSizeAndVersionReached(t, context.Background(), f.KubeClient, "v3.3.25", 3, f.RetryAttempts, testEtcd)
+	err = e2eutil.WaitSizeAndVersionReached(t, context.Background(), f.KubeClient, "v3.4.37", 3, f.RetryAttempts, testEtcd)
 	if err != nil {
 		t.Fatalf("failed to create 3 members etcd cluster: %v", err)
 	}
 
-	targetVersion := "v3.5.17"
+	targetVersion := "v3.5.21"
+	updateFunc := func(cl *api.EtcdCluster) {
+		_ = e2eutil.ClusterWithVersion(cl, targetVersion)
+	}
+	_, err = e2eutil.UpdateCluster(f.CRClient, testEtcd, 10, updateFunc)
+	if err != nil {
+		t.Fatalf("fail to update cluster version: %v", err)
+	}
+
+	// We have seen in k8s 1.7.1 env it took 35s for the pod to restart with the new image.
+	err = e2eutil.WaitSizeAndVersionReached(t, context.Background(), f.KubeClient, targetVersion, 3, 10, testEtcd)
+	if err != nil {
+		t.Fatalf("failed to wait new version etcd cluster: %v", err)
+	}
+}
+
+func TestEtcdUpgrade(t *testing.T) {
+	if os.Getenv(envParallelTest) == envParallelTestTrue {
+		t.Parallel()
+	}
+	f := framework.Global
+	origEtcd := e2eutil.NewCluster("test-etcd-", 3)
+	origEtcd = e2eutil.ClusterWithVersion(origEtcd, "v3.5.21")
+	origEtcd.Spec.Repository = "gcr.io/etcd-development/etcd"
+	testEtcd, err := e2eutil.CreateCluster(t, context.Background(), f.CRClient, f.Namespace, origEtcd)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if err := e2eutil.DeleteCluster(t, context.Background(), f.CRClient, f.KubeClient, testEtcd); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	err = e2eutil.WaitSizeAndVersionReached(t, context.Background(), f.KubeClient, "v3.5.21", 3, f.RetryAttempts, testEtcd)
+	if err != nil {
+		t.Fatalf("failed to create 3 members etcd cluster: %v", err)
+	}
+
+	targetVersion := "v3.6.1"
 	updateFunc := func(cl *api.EtcdCluster) {
 		_ = e2eutil.ClusterWithVersion(cl, targetVersion)
 	}

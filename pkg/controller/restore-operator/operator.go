@@ -39,7 +39,7 @@ type Restore struct {
 	// k8s workqueue pattern
 	indexer  cache.Indexer
 	informer cache.Controller
-	queue    workqueue.RateLimitingInterface
+	queue    workqueue.TypedRateLimitingInterface[any]
 
 	kubecli    kubernetes.Interface
 	etcdCRCli  versioned.Interface

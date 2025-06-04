@@ -40,7 +40,7 @@ func handleABS(ctx context.Context, kubecli kubernetes.Interface, s *api.ABSBack
 	if tlsConfig, err = generateTLSConfig(ctx, kubecli, clientTLSSecret, namespace, allowSelfSignedCertificates); err != nil {
 		return nil, err
 	}
-	bm := backup.NewBackupManagerFromWriter(kubecli, writer.NewABSWriter(cli.ABS), tlsConfig, endpoints, namespace)
+	bm := backup.NewBackupManagerFromWriter(kubecli, writer.NewABSWriter(cli.ServiceClient), tlsConfig, endpoints, namespace)
 
 	rev, etcdVersion, now, err := bm.SaveSnap(ctx, s.Path, isPeriodic)
 	if err != nil {

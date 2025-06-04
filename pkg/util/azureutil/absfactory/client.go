@@ -18,58 +18,56 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Azure/azure-sdk-for-go/storage"
-	"github.com/Azure/go-autorest/autorest/azure"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/service"
 	api "github.com/on2itsecurity/etcd-operator/pkg/apis/etcd/v1beta2"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
-// ABSClient is a wrapper of ABS client that provides cleanup functionality.
 type ABSClient struct {
-	ABS *storage.BlobStorageClient
+	ServiceClient *service.Client
+	BlobClient    *azblob.Client
 }
 
-// parseAzureEnvironment returns azure environment by name
-func parseAzureEnvironment(cloudName string) (azure.Environment, error) {
-	if cloudName == "" {
-		return azure.PublicCloud, nil
-	}
-
-	return azure.EnvironmentFromName(cloudName)
-}
-
-// NewClientFromSecret returns a ABS client based on given k8s secret containing azure credentials.
-func NewClientFromSecret(ctx context.Context, kubecli kubernetes.Interface, namespace, absSecret string) (w *ABSClient, err error) {
-	defer func() {
-		if err != nil {
-			err = fmt.Errorf("new ABS client failed: %v", err)
-		}
-	}()
-
+func NewClientFromSecret(ctx context.Context, kubecli kubernetes.Interface, namespace, absSecret string) (*ABSClient, error) {
 	se, err := kubecli.CoreV1().Secrets(namespace).Get(ctx, absSecret, metav1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get k8s secret: %v", err)
 	}
 
-	storageAccount := se.Data[api.AzureSecretStorageAccount]
-	storageKey := se.Data[api.AzureSecretStorageKey]
-	cloudName := se.Data[api.AzureCloudKey]
-
-	cloud, err := parseAzureEnvironment(string(cloudName))
+	accountName := string(se.Data[api.AzureSecretStorageAccount])
+	accountKey := string(se.Data[api.AzureSecretStorageKey])
+	cred, err := azblob.NewSharedKeyCredential(accountName, accountKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create shared key credential: %v", err)
 	}
 
-	bc, err := storage.NewBasicClientOnSovereignCloud(
-		string(storageAccount),
-		string(storageKey),
-		cloud)
+	url := fmt.Sprintf("https://%s.blob.core.windows.net/", accountName)
+
+	svcClient, err := service.NewClientWithSharedKeyCredential(url, cred, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create Azure storage client: %v", err)
+		return nil, fmt.Errorf("failed to create service client: %v", err)
 	}
 
-	abs := bc.GetBlobService()
-	return &ABSClient{ABS: &abs}, nil
+	blobClient, err := azblob.NewClientWithSharedKeyCredential(url, cred, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create blob client: %v", err)
+	}
+
+	return &ABSClient{
+		ServiceClient: svcClient,
+		BlobClient:    blobClient,
+	}, nil
+
+}
+
+// ABSReader wraps an azblob.Client for reading operations.
+type ABSReader struct {
+	client *azblob.Client
+}
+
+func NewABSReader(client *azblob.Client) *ABSReader {
+	return &ABSReader{client: client}
 }

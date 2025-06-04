@@ -18,137 +18,152 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/on2itsecurity/etcd-operator/pkg/backup/util"
 	"io"
 
-	"github.com/Azure/azure-sdk-for-go/storage"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/service"
+	"github.com/on2itsecurity/etcd-operator/pkg/backup/util"
 	"github.com/pborman/uuid"
 )
 
+type absWriter struct {
+	client *service.Client
+}
+
 var _ Writer = &absWriter{}
 
-type absWriter struct {
-	abs *storage.BlobStorageClient
+type ABSClient struct {
+	Client *service.Client
 }
 
-// NewABSWriter creates a abs writer.
-func NewABSWriter(abs *storage.BlobStorageClient) Writer {
-	return &absWriter{abs}
+func NewABSWriter(client *service.Client) Writer {
+	return &absWriter{client}
 }
 
-const (
-	// AzureBlobBlockChunkLimitInBytes 100MiB is the limit
-	AzureBlobBlockChunkLimitInBytes = 100 * 1024 * 1024
-)
+const AzureBlobBlockChunkLimitInBytes = 100 * 1024 * 1024
 
-// Write writes the backup file to the given abs path, "<abs-container-name>/<key>".
 func (absw *absWriter) Write(ctx context.Context, path string, r io.Reader) (int64, error) {
-	// TODO: support context.
 	container, key, err := util.ParseBucketAndKey(path)
-
 	if err != nil {
 		return 0, err
 	}
 
-	containerRef := absw.abs.GetContainerReference(container)
-	containerExists, err := containerRef.Exists()
-
-	if err != nil {
-		return 0, err
+	containerClient := absw.client.NewContainerClient(container)
+	if _, err = containerClient.GetProperties(ctx, nil); err != nil {
+		return 0, fmt.Errorf("container %v does not exist or is inaccessible: %v", container, err)
 	}
 
-	if !containerExists {
-		return 0, fmt.Errorf("container %v does not exist", container)
-	}
+	blobClient := containerClient.NewBlockBlobClient(key)
+	blockIDs := []string{}
+	total := int64(0)
+	buf := make([]byte, AzureBlobBlockChunkLimitInBytes)
 
-	blob := containerRef.GetBlobReference(key)
-
-	err = blob.CreateBlockBlob(&storage.PutBlobOptions{})
-	if err != nil {
-		return 0, err
-	}
-
-	blocks := make([]storage.Block, 0)
-	block := make([]byte, AzureBlobBlockChunkLimitInBytes)
 	for {
-
-		nbRead, maybeEof := io.ReadFull(r, block)
-
-		if maybeEof == io.EOF {
+		n, readErr := io.ReadFull(r, buf)
+		if readErr != nil && readErr != io.ErrUnexpectedEOF && readErr != io.EOF {
+			return 0, readErr
+		}
+		if n == 0 {
 			break
 		}
 
 		blockID := base64.StdEncoding.EncodeToString([]byte(uuid.New()))
-		blocks = append(blocks, storage.Block{ID: blockID, Status: storage.BlockStatusLatest})
-
-		chunk := block[0:nbRead]
-		err = blob.PutBlock(blockID, chunk, &storage.PutBlockOptions{})
-
+		_, err := blobClient.StageBlock(ctx, blockID, streamingBytes(buf[:n]), nil)
 		if err != nil {
 			return 0, err
 		}
+		blockIDs = append(blockIDs, blockID)
+		total += int64(n)
 
-		if maybeEof == io.ErrUnexpectedEOF {
+		if readErr == io.ErrUnexpectedEOF || readErr == io.EOF {
 			break
 		}
 	}
 
-	err = blob.PutBlockList(blocks, &storage.PutBlockListOptions{})
+	_, err = blobClient.CommitBlockList(ctx, blockIDs, nil)
 	if err != nil {
 		return 0, err
 	}
 
-	_, err = blob.Get(&storage.GetBlobOptions{})
+	props, err := blobClient.GetProperties(ctx, nil)
 	if err != nil {
 		return 0, err
 	}
-
-	return blob.Properties.ContentLength, nil
+	return *props.ContentLength, nil
 }
 
 func (absw *absWriter) List(ctx context.Context, basePath string) ([]string, error) {
-	// TODO: support context.
-	container, key, err := util.ParseBucketAndKey(basePath)
+	container, prefix, err := util.ParseBucketAndKey(basePath)
 	if err != nil {
 		return nil, err
 	}
 
-	containerRef := absw.abs.GetContainerReference(container)
-	containerExists, err := containerRef.Exists()
-	if err != nil {
-		return nil, err
-	}
-	if !containerExists {
-		return nil, fmt.Errorf("container %v does not exist", container)
-	}
+	containerClient := absw.client.NewContainerClient(container)
+	pager := containerClient.NewListBlobsFlatPager(&azblob.ListBlobsFlatOptions{
+		Prefix: &prefix,
+	})
 
-	blobs, err := containerRef.ListBlobs(
-		storage.ListBlobsParameters{Prefix: key})
-	if err != nil {
-		return nil, err
-	}
-	blobKeys := []string{}
-	for _, blob := range blobs.Blobs {
-		blobKeys = append(blobKeys, container+"/"+blob.Name)
+	var blobKeys []string
+	for pager.More() {
+		page, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, blob := range page.Segment.BlobItems {
+			blobKeys = append(blobKeys, container+"/"+*blob.Name)
+		}
 	}
 	return blobKeys, nil
 }
 
 func (absw *absWriter) Delete(ctx context.Context, path string) error {
-	// TODO: support context.
 	container, key, err := util.ParseBucketAndKey(path)
 	if err != nil {
 		return err
 	}
-	containerRef := absw.abs.GetContainerReference(container)
-	containerExists, err := containerRef.Exists()
-	if err != nil {
-		return err
-	}
-	if !containerExists {
-		return fmt.Errorf("container %v does not exist", container)
-	}
 
-	blob := containerRef.GetBlobReference(key)
-	return blob.Delete(&storage.DeleteBlobOptions{})
+	containerClient := absw.client.NewContainerClient(container)
+	blobClient := containerClient.NewBlockBlobClient(key)
+
+	_, err = blobClient.Delete(ctx, nil)
+	return err
 }
+
+func streamingBytes(b []byte) io.ReadSeekCloser {
+	return &readSeekNopCloser{data: b}
+}
+
+type readSeekNopCloser struct {
+	data []byte
+	pos  int64
+}
+
+func (r *readSeekNopCloser) Read(p []byte) (int, error) {
+	if r.pos >= int64(len(r.data)) {
+		return 0, io.EOF
+	}
+	n := copy(p, r.data[r.pos:])
+	r.pos += int64(n)
+	return n, nil
+}
+
+func (r *readSeekNopCloser) Seek(offset int64, whence int) (int64, error) {
+	var abs int64
+	switch whence {
+	case io.SeekStart:
+		abs = offset
+	case io.SeekCurrent:
+		abs = r.pos + offset
+	case io.SeekEnd:
+		abs = int64(len(r.data)) + offset
+	default:
+		return 0, fmt.Errorf("invalid seek whence: %d", whence)
+	}
+	if abs < 0 {
+		return 0, fmt.Errorf("negative position")
+	}
+	r.pos = abs
+	return abs, nil
+}
+
+func (r *readSeekNopCloser) Close() error { return nil }

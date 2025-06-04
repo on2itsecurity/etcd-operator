@@ -104,10 +104,10 @@ func (b *Backup) processItem(ctx context.Context, key string) error {
 			b.logger.Debugln("Calculating remaining periodic backup time, based on EtcdBackup crd creation date")
 
 			// duration = (Create date in seconds + backup interval in seconds) - current data in seconds
-			duration = int64(eb.CreationTimestamp.Time.Add(time.Duration(eb.Spec.BackupPolicy.BackupIntervalInSecond) * time.Second).Sub(time.Now()).Seconds())
-                        if duration <= 0 {
-                                duration = eb.Spec.BackupPolicy.BackupIntervalInSecond
-                        }
+			duration = int64(time.Until(eb.CreationTimestamp.Time.Add(time.Duration(eb.Spec.BackupPolicy.BackupIntervalInSecond) * time.Second)).Seconds())
+			if duration <= 0 {
+				duration = eb.Spec.BackupPolicy.BackupIntervalInSecond
+			}
 			ticker = time.NewTicker(
 				time.Duration(duration) * time.Second)
 		} else { // if lastExecution already exists
@@ -228,7 +228,7 @@ func (b *Backup) periodicRunnerFunc(ctx context.Context, t *time.Ticker, eb *api
 					}
 					b.logger.Warningf("[Attempt: %d/%d] Failed to get latest EtcdBackup %v : (%v)",
 						i, retryLimit, eb.Name, err)
-					time.Sleep(1)
+					time.Sleep(1 * time.Second)
 					continue
 				}
 				break

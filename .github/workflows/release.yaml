@@ -25,7 +25,7 @@ jobs:
         id: buildx
         with:
           buildkitd-config: .github/buildkitd.toml
-          version: v0.19.2
+          version: v0.22.0
         uses: docker/setup-buildx-action@v3
 
       - name: Getting image tag

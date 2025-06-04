@@ -15,12 +15,13 @@
 package reader
 
 import (
+	"context"
 	"fmt"
 	"io"
 
 	"github.com/on2itsecurity/etcd-operator/pkg/backup/util"
 
-	"github.com/Azure/azure-sdk-for-go/storage"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 )
 
 // ensure absReader satisfies reader interface.
@@ -28,11 +29,11 @@ var _ Reader = &absReader{}
 
 // absReader provides Reader implementation for reading a file from ABS
 type absReader struct {
-	abs *storage.BlobStorageClient
+	abs *azblob.Client
 }
 
 // NewABSReader return a Reader implementation to read a file from ABS in the form of absReader
-func NewABSReader(abs *storage.BlobStorageClient) Reader {
+func NewABSReader(abs *azblob.Client) Reader {
 	return &absReader{abs}
 }
 
@@ -43,16 +44,10 @@ func (absr *absReader) Open(path string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("failed to parse abs container and key: %v", err)
 	}
 
-	containerRef := absr.abs.GetContainerReference(container)
-	containerExists, err := containerRef.Exists()
+	resp, err := absr.abs.DownloadStream(context.Background(), container, key, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to download blob: %v", err)
 	}
 
-	if !containerExists {
-		return nil, fmt.Errorf("container %v does not exist", container)
-	}
-
-	blob := containerRef.GetBlobReference(key)
-	return blob.Get(&storage.GetBlobOptions{})
+	return resp.Body, nil
 }
