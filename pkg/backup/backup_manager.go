@@ -21,10 +21,10 @@ import (
 	"sort"
 	"time"
 
-	"go.etcd.io/etcd/client/v3"
 	"github.com/on2itsecurity/etcd-operator/pkg/backup/util"
 	"github.com/on2itsecurity/etcd-operator/pkg/backup/writer"
 	"github.com/on2itsecurity/etcd-operator/pkg/util/constants"
+	clientv3 "go.etcd.io/etcd/client/v3"
 
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -161,7 +161,7 @@ func getClientWithMaxRev(ctx context.Context, endpoints []string, tc *tls.Config
 		for _, errStr := range errors {
 			errorStr += errStr + "\n"
 		}
-		err = fmt.Errorf(errorStr)
+		err = fmt.Errorf("%s", errorStr)
 	}
 
 	if maxClient == nil {

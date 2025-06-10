@@ -121,7 +121,7 @@ func (r *Restore) serveBackup(ctx context.Context, w http.ResponseWriter, req *h
 		}
 		// Nothing to Close for absCli yet
 
-		backupReader = reader.NewABSReader(absCli.ABS)
+		backupReader = reader.NewABSReader(absCli.BlobClient)
 		path = absRestoreSource.Path
 	case api.BackupStorageTypeGCS:
 		ctx := context.TODO()

@@ -67,11 +67,11 @@ func (r *Restore) processItem(ctx context.Context, key string) error {
 	if !exists {
 		return nil
 	}
-	return r.handleCR(ctx, obj.(*api.EtcdRestore), key)
+	return r.handleCR(ctx, obj.(*api.EtcdRestore))
 }
 
 // handleCR takes in EtcdRestore CR and prepares the seed so that etcd operator can take over it later.
-func (r *Restore) handleCR(ctx context.Context, er *api.EtcdRestore, key string) (err error) {
+func (r *Restore) handleCR(ctx context.Context, er *api.EtcdRestore) (err error) {
 	// don't process the CR if it has a status since
 	// having a status means that the restore is either made or failed.
 	if er.Status.Succeeded || len(er.Status.Reason) != 0 {
@@ -132,14 +132,16 @@ func (r *Restore) handleErr(err error, key interface{}) {
 // - fetches and deletes the reference EtcdCluster CR
 // - creates new EtcdCluster CR with same metadata and spec as the reference CR
 // - and spec.paused=true and status.phase="Running"
-//  - spec.paused=true: keep operator from touching membership
-// 	- status.phase=Running:
-//  	1. expect operator to setup the services
-//  	2. make operator ignore the "create seed member" phase
+//   - spec.paused=true: keep operator from touching membership
+//   - status.phase=Running:
+//     1. expect operator to setup the services
+//     2. make operator ignore the "create seed member" phase
+//
 // - create seed member that would restore data from backup
-// 	- ownerRef to above EtcdCluster CR
+//   - ownerRef to above EtcdCluster CR
+//
 // - update EtcdCluster CR spec.paused=false
-// 	- etcd operator should pick up the membership and scale the etcd cluster
+//   - etcd operator should pick up the membership and scale the etcd cluster
 func (r *Restore) prepareSeed(ctx context.Context, er *api.EtcdRestore) (err error) {
 	defer func() {
 		if err != nil {
