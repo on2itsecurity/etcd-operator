@@ -15,7 +15,7 @@ require (
 	github.com/prometheus/client_golang v1.22.0
 	github.com/sirupsen/logrus v1.9.3
 	go.etcd.io/etcd/api/v3 v3.6.1
-	go.etcd.io/etcd/client/pkg/v3 v3.6.1
+	go.etcd.io/etcd/client/pkg/v3 v3.6.2
 	go.etcd.io/etcd/client/v3 v3.6.1
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/oauth2 v0.30.0
