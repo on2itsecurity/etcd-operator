@@ -18,7 +18,7 @@ require (
 	go.etcd.io/etcd/client/pkg/v3 v3.6.5
 	go.etcd.io/etcd/client/v3 v3.6.5
 	go.uber.org/automaxprocs v1.6.0
-	golang.org/x/oauth2 v0.30.0
+	golang.org/x/oauth2 v0.35.0
 	golang.org/x/time v0.12.0
 	google.golang.org/api v0.247.0
 	k8s.io/api v0.33.4
