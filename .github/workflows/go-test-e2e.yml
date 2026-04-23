@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Set up Go 1.24
+        name: Set up Go 1.26
         uses: actions/setup-go@v6
         with:
-          go-version: 1.24
+          go-version: 1.26
         id: go
       -
         name: Check out code into the Go module directory
@@ -47,7 +47,7 @@ jobs:
         id: buildx
         with:
           buildkitd-config: .github/buildkitd.toml
-          version: v0.22.0
+          version: v0.29.0
         uses: docker/setup-buildx-action@v3
       -
         name: Build e2e image
@@ -76,7 +76,7 @@ jobs:
           k3d-version: v5.8.3
           cluster-name: test-cluster-1
           args: >-
-            --image docker.io/rancher/k3s:v1.32.5-k3s1-amd64
+            --image docker.io/rancher/k3s:v1.35.4-rc2-k3s1
             --agents 1
             --no-lb
             --k3s-arg "--disable=traefik,servicelb,metrics-server@server:*"
@@ -116,7 +116,7 @@ jobs:
         id: buildx
         with:
           buildkitd-config: .github/buildkitd.toml
-          version: v0.22.0
+          version: v0.29.0
         uses: docker/setup-buildx-action@v3
       -
         name: Build

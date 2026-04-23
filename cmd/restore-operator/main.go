@@ -28,7 +28,6 @@ import (
 	"github.com/on2itsecurity/etcd-operator/pkg/util/k8sutil"
 	version "github.com/on2itsecurity/etcd-operator/version"
 	"github.com/sirupsen/logrus"
-	_ "go.uber.org/automaxprocs"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/leaderelection"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"

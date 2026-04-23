@@ -24,7 +24,7 @@ import (
 
 const (
 	defaultRepository  = "gcr.io/etcd-development/etcd"
-	DefaultEtcdVersion = "v3.6.1"
+	DefaultEtcdVersion = "v3.6.10"
 )
 
 var (
@@ -90,7 +90,7 @@ type ClusterSpec struct {
 	// The version must follow the [semver](http://semver.org) format, prefixed with "v", for example "v3.6.1".
 	// Only etcd released versions are supported: https://github.com/etcd-io/etcd/releases
 	//
-	// If version is not set, default is "v3.6.1".
+	// If version is not set, default is "v3.6.10".
 	Version string `json:"version,omitempty"`
 
 	// Paused is to pause the control of the operator for the etcd cluster.

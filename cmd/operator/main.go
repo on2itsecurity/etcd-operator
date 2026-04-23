@@ -35,7 +35,6 @@ import (
 
 	_ "github.com/KimMachineGun/automemlimit"
 	"github.com/sirupsen/logrus"
-	_ "go.uber.org/automaxprocs"
 
 	"golang.org/x/time/rate"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
