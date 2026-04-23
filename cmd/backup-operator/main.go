@@ -28,7 +28,6 @@ import (
 	"github.com/on2itsecurity/etcd-operator/pkg/util/constants"
 	"github.com/on2itsecurity/etcd-operator/pkg/util/k8sutil"
 	"github.com/on2itsecurity/etcd-operator/version"
-	_ "go.uber.org/automaxprocs"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"

@@ -166,7 +166,7 @@ func TestEtcdUpgrade(t *testing.T) {
 		t.Fatalf("failed to create 3 members etcd cluster: %v", err)
 	}
 
-	targetVersion := "v3.6.1"
+	targetVersion := "v3.6.10"
 	updateFunc := func(cl *api.EtcdCluster) {
 		_ = e2eutil.ClusterWithVersion(cl, targetVersion)
 	}
