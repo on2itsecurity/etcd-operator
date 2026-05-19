@@ -5,7 +5,7 @@ go 1.26.0
 toolchain go1.26.2
 
 require (
-	cloud.google.com/go/storage v1.62.1
+	cloud.google.com/go/storage v1.62.2
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.6.4
 	github.com/KimMachineGun/automemlimit v0.7.5
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
